@@ -93,8 +93,12 @@ document.addEventListener('DOMContentLoaded', () => {
     bindHeaderActions();
     updateStatusBar();
     
-    // Auto-load default GPX files if hosted on a web server
-    preloadGPXFiles();
+    // Auto-load config if it exists, otherwise preload default GPX files
+    autoLoadConfig().then(configLoaded => {
+        if (!configLoaded) {
+            preloadGPXFiles();
+        }
+    });
 });
 
 // ===== DATA PRELOADING =====
@@ -124,6 +128,56 @@ async function preloadGPXFiles() {
         state.simulationResults = null;
         renderRouteCards();
         updateStatusBar();
+    }
+}
+
+async function autoLoadConfig() {
+    try {
+        const response = await fetch('marin-century-config.json');
+        if (!response.ok) return false;
+        
+        const config = await response.json();
+        if (config.version !== 1 && config.version !== 2) return false;
+
+        // Restore state
+        config.routes.forEach((saved, i) => {
+            if (i < state.routes.length) Object.assign(state.routes[i], saved);
+        });
+
+        if (config.tierWeights) state.tierWeights = config.tierWeights;
+        if (config.speedModel) Object.assign(state.speedModel, config.speedModel);
+        if (config.weather) Object.assign(state.weather, config.weather);
+
+        // Re-parse any saved GPX data
+        state.routes.forEach((route, i) => {
+            if (route.gpxRawXml) reloadRouteFromXml(i);
+        });
+
+        // Re-render everything
+        renderRouteCards();
+        renderRidersTab();
+        renderSettingsTab();
+        updateStatusBar();
+
+        // Update settings UI values
+        document.getElementById('uphill-factor').value = state.speedModel.uphillFactor;
+        document.getElementById('downhill-factor').value = state.speedModel.downhillFactor;
+        document.getElementById('min-speed').value = state.speedModel.minSpeed;
+        document.getElementById('max-speed').value = state.speedModel.maxSpeed;
+        document.getElementById('weather-slider').value = Math.round(state.weather.factor * 100);
+        document.getElementById('weather-value').textContent = `${Math.round(state.weather.factor * 100)}%`;
+        document.getElementById('weather-start-hour').value = state.weather.startHour;
+
+        const weightIds = ['weight-max', 'weight-upper', 'weight-mid', 'weight-lower', 'weight-min'];
+        weightIds.forEach((id, i) => {
+            document.getElementById(id).value = Math.round(state.tierWeights[i] * 100);
+        });
+        
+        console.log('Successfully auto-loaded marin-century-config.json');
+        return true;
+    } catch (err) {
+        console.log('No marin-century-config.json found (using defaults).', err.message);
+        return false;
     }
 }
 
