@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gpx version="1.1" creator="MarinCenturyTest"
+  xmlns="http://www.topografix.com/GPX/1/1">
+  <metadata>
+    <name>Sample Route - Geronimo 37</name>
+  </metadata>
+  <wpt lat="38.0519" lon="-122.5312">
+    <name>START - Marin Civic Center</name>
+  </wpt>
+  <wpt lat="38.0785" lon="-122.5950">
+    <name>Nicasio Valley School RS</name>
+  </wpt>
+  <wpt lat="38.1200" lon="-122.6800">
+    <name>Cheese Factory RS</name>
+  </wpt>
+  <wpt lat="38.0519" lon="-122.5312">
+    <name>FINISH - Marin Civic Center</name>
+  </wpt>
+  <trk>
+    <name>Geronimo 37</name>
+    <trkseg>
+      <!-- Start: Marin Civic Center, San Rafael (elev ~10m) -->
+      <trkpt lat="38.0519" lon="-122.5312"><ele>3</ele></trkpt>
+      <trkpt lat="38.0530" lon="-122.5340"><ele>5</ele></trkpt>
+      <trkpt lat="38.0545" lon="-122.5370"><ele>8</ele></trkpt>
+      <trkpt lat="38.0560" lon="-122.5410"><ele>12</ele></trkpt>
+      <trkpt lat="38.0575" lon="-122.5450"><ele>18</ele></trkpt>
+      <!-- Gentle climb through Lucas Valley -->
+      <trkpt lat="38.0590" lon="-122.5490"><ele>25</ele></trkpt>
+      <trkpt lat="38.0610" lon="-122.5530"><ele>35</ele></trkpt>
+      <trkpt lat="38.0630" lon="-122.5570"><ele>48</ele></trkpt>
+      <trkpt lat="38.0650" lon="-122.5610"><ele>62</ele></trkpt>
+      <trkpt lat="38.0670" lon="-122.5650"><ele>78</ele></trkpt>
+      <trkpt lat="38.0690" lon="-122.5690"><ele>95</ele></trkpt>
+      <trkpt lat="38.0710" lon="-122.5730"><ele>110</ele></trkpt>
+      <!-- Summit and descent to Nicasio -->
+      <trkpt lat="38.0725" lon="-122.5770"><ele>120</ele></trkpt>
+      <trkpt lat="38.0740" lon="-122.5810"><ele>125</ele></trkpt>
+      <trkpt lat="38.0755" lon="-122.5850"><ele>118</ele></trkpt>
+      <trkpt lat="38.0770" lon="-122.5890"><ele>105</ele></trkpt>
+      <trkpt lat="38.0785" lon="-122.5930"><ele>90</ele></trkpt>
+      <trkpt lat="38.0785" lon="-122.5950"><ele>80</ele></trkpt>
+      <!-- Nicasio Valley - gentle rolling -->
+      <trkpt lat="38.0800" lon="-122.5990"><ele>75</ele></trkpt>
+      <trkpt lat="38.0820" lon="-122.6040"><ele>72</ele></trkpt>
+      <trkpt lat="38.0850" lon="-122.6090"><ele>78</ele></trkpt>
+      <trkpt lat="38.0880" lon="-122.6140"><ele>82</ele></trkpt>
+      <trkpt lat="38.0910" lon="-122.6190"><ele>88</ele></trkpt>
+      <trkpt lat="38.0940" lon="-122.6240"><ele>92</ele></trkpt>
+      <!-- Climb to cheese factory -->
+      <trkpt lat="38.0970" lon="-122.6300"><ele>100</ele></trkpt>
+      <trkpt lat="38.1000" lon="-122.6360"><ele>115</ele></trkpt>
+      <trkpt lat="38.1030" lon="-122.6420"><ele>130</ele></trkpt>
+      <trkpt lat="38.1060" lon="-122.6480"><ele>148</ele></trkpt>
+      <trkpt lat="38.1090" lon="-122.6540"><ele>160</ele></trkpt>
+      <trkpt lat="38.1120" lon="-122.6600"><ele>172</ele></trkpt>
+      <trkpt lat="38.1150" lon="-122.6660"><ele>180</ele></trkpt>
+      <trkpt lat="38.1180" lon="-122.6720"><ele>185</ele></trkpt>
+      <trkpt lat="38.1200" lon="-122.6800"><ele>190</ele></trkpt>
+      <!-- Turnaround, descent back -->
+      <trkpt lat="38.1180" lon="-122.6740"><ele>182</ele></trkpt>
+      <trkpt lat="38.1150" lon="-122.6680"><ele>170</ele></trkpt>
+      <trkpt lat="38.1120" lon="-122.6620"><ele>155</ele></trkpt>
+      <trkpt lat="38.1090" lon="-122.6560"><ele>140</ele></trkpt>
+      <trkpt lat="38.1060" lon="-122.6500"><ele>125</ele></trkpt>
+      <trkpt lat="38.1030" lon="-122.6440"><ele>110</ele></trkpt>
+      <trkpt lat="38.1000" lon="-122.6380"><ele>95</ele></trkpt>
+      <!-- Rolling through Nicasio back -->
+      <trkpt lat="38.0940" lon="-122.6260"><ele>85</ele></trkpt>
+      <trkpt lat="38.0910" lon="-122.6210"><ele>80</ele></trkpt>
+      <trkpt lat="38.0880" lon="-122.6160"><ele>75</ele></trkpt>
+      <trkpt lat="38.0850" lon="-122.6110"><ele>72</ele></trkpt>
+      <trkpt lat="38.0820" lon="-122.6060"><ele>70</ele></trkpt>
+      <trkpt lat="38.0800" lon="-122.6010"><ele>72</ele></trkpt>
+      <trkpt lat="38.0785" lon="-122.5960"><ele>78</ele></trkpt>
+      <!-- Climb back over Lucas Valley -->
+      <trkpt lat="38.0770" lon="-122.5910"><ele>90</ele></trkpt>
+      <trkpt lat="38.0755" lon="-122.5870"><ele>105</ele></trkpt>
+      <trkpt lat="38.0740" lon="-122.5830"><ele>118</ele></trkpt>
+      <trkpt lat="38.0725" lon="-122.5790"><ele>125</ele></trkpt>
+      <!-- Descent to finish -->
+      <trkpt lat="38.0710" lon="-122.5750"><ele>115</ele></trkpt>
+      <trkpt lat="38.0690" lon="-122.5710"><ele>100</ele></trkpt>
+      <trkpt lat="38.0670" lon="-122.5670"><ele>82</ele></trkpt>
+      <trkpt lat="38.0650" lon="-122.5630"><ele>65</ele></trkpt>
+      <trkpt lat="38.0630" lon="-122.5590"><ele>48</ele></trkpt>
+      <trkpt lat="38.0610" lon="-122.5550"><ele>32</ele></trkpt>
+      <trkpt lat="38.0590" lon="-122.5510"><ele>20</ele></trkpt>
+      <trkpt lat="38.0575" lon="-122.5470"><ele>12</ele></trkpt>
+      <trkpt lat="38.0560" lon="-122.5430"><ele>8</ele></trkpt>
+      <trkpt lat="38.0545" lon="-122.5390"><ele>5</ele></trkpt>
+      <trkpt lat="38.0530" lon="-122.5350"><ele>4</ele></trkpt>
+      <trkpt lat="38.0519" lon="-122.5312"><ele>3</ele></trkpt>
+    </trkseg>
+  </trk>
+</gpx>
