@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "savedAt": "2026-03-07T22:41:15.862Z",
+  "savedAt": "2026-03-07T23:47:10.079Z",
   "routes": [
     {
       "name": "Geronimo 37",
@@ -667,9 +667,9 @@
   ],
   "speedModel": {
     "uphillFactor": 1,
-    "downhillFactor": 0.5,
-    "minSpeed": 3,
-    "maxSpeed": 30
+    "downhillFactor": 2.4,
+    "minSpeed": 4,
+    "maxSpeed": 35
   },
   "weather": {
     "factor": 0,
