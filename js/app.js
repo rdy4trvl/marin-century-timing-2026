@@ -126,6 +126,18 @@ async function preloadGPXFiles() {
     
     if (loadedCount > 0) {
         state.simulationResults = null;
+        
+        // After loading GPX files, apply any customized rest stops from the loaded config
+        state.routes.forEach(route => {
+             // If route has a config loaded (which might have restored customized restStops)
+             // but we just grabbed fresh GPX, we should ensure the customized rest stops
+             // overwrite the default GPX ones, matching by segmentIndex or name
+             if (route.restStopsFromConfig) {
+                 route.restStops = route.restStopsFromConfig;
+                 delete route.restStopsFromConfig;
+             }
+        });
+
         renderRouteCards();
         updateStatusBar();
     }
@@ -148,16 +160,20 @@ async function autoLoadConfig() {
         if (config.speedModel) Object.assign(state.speedModel, config.speedModel);
         if (config.weather) Object.assign(state.weather, config.weather);
 
-        // Re-parse any saved GPX data
+        // Step 2: For each route loaded from config, save its rest stops temporarily
+        // so `preloadGPXFiles` can apply them after parsing the fresh GPX data.
         state.routes.forEach((route, i) => {
-            if (route.gpxRawXml) reloadRouteFromXml(i);
+            if (config.routes[i] && config.routes[i].restStops) {
+                route.restStopsFromConfig = config.routes[i].restStops;
+            }
         });
 
+        // Step 3: Fetch the actual GPX map data directly from the files
+        await preloadGPXFiles();
+
         // Re-render everything
-        renderRouteCards();
         renderRidersTab();
         renderSettingsTab();
-        updateStatusBar();
 
         // Update settings UI values
         document.getElementById('uphill-factor').value = state.speedModel.uphillFactor;
@@ -1076,8 +1092,8 @@ function saveConfig() {
             speedTiers: r.speedTiers,
             startTimes: r.startTimes,
             restStops: r.restStops,
-            color: r.color,
-            gpxRawXml: r.gpxRawXml || null, // Retain GPX file content
+            color: r.color
+            // gpxRawXml: no longer saving raw GPX data in config
         })),
         tierWeights: state.tierWeights,
         speedModel: state.speedModel,
@@ -1093,12 +1109,12 @@ function saveConfig() {
     URL.revokeObjectURL(url);
 }
 
-function loadConfig(e) {
+async function loadConfig(e) {
     const file = e.target.files[0];
     if (!file) return;
 
     const reader = new FileReader();
-    reader.onload = () => {
+    reader.onload = async () => {
         try {
             const config = JSON.parse(reader.result);
             if (config.version !== 1 && config.version !== 2) {
@@ -1117,20 +1133,19 @@ function loadConfig(e) {
             if (config.speedModel) Object.assign(state.speedModel, config.speedModel);
             if (config.weather) Object.assign(state.weather, config.weather);
 
-            // Re-parse any saved GPX data
-            let gpxRestoredCount = 0;
+            // Step 2: Store the loaded rest stops so preloadGPXFiles can apply them
             state.routes.forEach((route, i) => {
-                if (route.gpxRawXml) {
-                    reloadRouteFromXml(i);
-                    if (route.gpxLoaded) gpxRestoredCount++;
-                }
+                 if (config.routes[i] && config.routes[i].restStops) {
+                     route.restStopsFromConfig = config.routes[i].restStops;
+                 }
             });
 
+            // Step 3: Load fresh GPX data
+            await preloadGPXFiles();
+
             // Re-render everything
-            renderRouteCards();
             renderRidersTab();
             renderSettingsTab();
-            updateStatusBar();
 
             // Update settings UI values
             document.getElementById('uphill-factor').value = state.speedModel.uphillFactor;
@@ -1146,9 +1161,7 @@ function loadConfig(e) {
                 document.getElementById(id).value = Math.round(state.tierWeights[i] * 100);
             });
 
-            const msg = gpxRestoredCount > 0
-                ? `Configuration loaded. ${gpxRestoredCount} route(s) with GPX data restored.`
-                : 'Configuration loaded.';
+            const msg = 'Configuration loaded successfully. Processing GPX files...';
             alert(msg);
         } catch (err) {
             alert('Error loading config: ' + err.message);
