@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gpx xmlns:gpxdata="http://www.cluetrust.com/XML/GPXDATA/1/0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.topografix.com/GPX/1/1" version="1.1" creator="http://ridewithgps.com/" xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd http://www.cluetrust.com/XML/GPXDATA/1/0 http://www.cluetrust.com/Schemas/gpxdata10.xsd">
+  <metadata>
+    <name>2026 Century version 2</name>
+    <link href="https://ridewithgps.com/routes/54164896">
+      <text>2026 Century version 2</text>
+    </link>
+    <time>2026-03-06T12:22:55Z</time>
+  </metadata>
+  <rte>
+    <name>2026 Century version 2</name>
+    <rtept lat="38.11358" lon="-122.65309">
+      <name>Start</name>
+      <cmt>Start of route</cmt>
+    </rtept>
+    <rtept lat="38.11588" lon="-122.64959">
+      <name>Left</name>
+      <cmt>Turn left by booth</cmt>
+    </rtept>
+    <rtept lat="38.11633" lon="-122.65007">
+      <name>Left</name>
+      <cmt>Turn left onto Novato Boulevard</cmt>
+    </rtept>
+    <rtept lat="38.14258" lon="-122.70568">
+      <name>Left</name>
+      <cmt>Turn left onto Point Reyes Petaluma Road</cmt>
+    </rtept>
+    <rtept lat="38.09726" lon="-122.73354">
+      <name>Left</name>
+      <cmt>Turn left onto Nicasio Valley Road</cmt>
+    </rtept>
+    <rtept lat="38.01453" lon="-122.66376">
+      <name>Right</name>
+      <cmt>Turn right onto Sir Francis Drake Blvd</cmt>
+    </rtept>
+    <rtept lat="38.01638" lon="-122.67598">
+      <name>Right</name>
+      <cmt>Turn right onto Lagunitas School Rd for Rest Stop</cmt>
+    </rtept>
+    <rtept lat="38.01638" lon="-122.67598">
+      <name>Right</name>
+      <cmt>Turn right onto Sir Francis Drake Blvd</cmt>
+    </rtept>
+    <rtept lat="38.04991" lon="-122.75896">
+      <name>Right</name>
+      <cmt>Turn right onto Platform Bridge Rd</cmt>
+    </rtept>
+    <rtept lat="38.06904" lon="-122.76355">
+      <name>Left</name>
+      <cmt>Turn left onto Pt. Reyes - Petaluma Rd</cmt>
+    </rtept>
+    <rtept lat="38.07333" lon="-122.80144">
+      <name>Right</name>
+      <cmt>Turn right onto Shoreline Highway, CA 1</cmt>
+    </rtept>
+    <rtept lat="38.08746" lon="-122.81263">
+      <name>Left</name>
+      <cmt>Turn left in to Rest Stop</cmt>
+    </rtept>
+    <rtept lat="38.08746" lon="-122.81263">
+      <name>Left</name>
+      <cmt>Turn left onto Shoreline Highway, CA 1</cmt>
+    </rtept>
+    <rtept lat="38.245482" lon="-122.904888">
+      <name>Left</name>
+      <cmt>Turn Left out of rest stop on to Hwy 1</cmt>
+    </rtept>
+    <rtept lat="38.24629" lon="-122.90483">
+      <name>Left</name>
+      <cmt>Turn left onto Dillon Beach Rd</cmt>
+    </rtept>
+    <rtept lat="38.24881" lon="-122.94284">
+      <name>Right</name>
+      <cmt>Turn right onto Valley Ford Franklin School Road</cmt>
+    </rtept>
+    <rtept lat="38.2803" lon="-122.94747">
+      <name>Sharp Right</name>
+      <cmt>Turn sharp right onto Whitaker Bluff Road</cmt>
+    </rtept>
+    <rtept lat="38.27306" lon="-122.92482">
+      <name>Left</name>
+      <cmt>Turn left onto Whitaker Bluff Road</cmt>
+    </rtept>
+    <rtept lat="38.26572" lon="-122.83795">
+      <name>Right</name>
+      <cmt>Turn right onto Alexander Road</cmt>
+    </rtept>
+    <rtept lat="38.25323" lon="-122.83875">
+      <name>Sharp Left</name>
+      <cmt>Turn sharp left onto Tomales Petaluma Road</cmt>
+    </rtept>
+    <rtept lat="38.25565" lon="-122.8161">
+      <name>Right</name>
+      <cmt>Turn right onto Chileno Valley Road</cmt>
+    </rtept>
+    <rtept lat="38.19542" lon="-122.70786">
+      <name>Left</name>
+      <cmt>Turn left to stay on Chileno Valley Rd</cmt>
+    </rtept>
+    <rtept lat="38.223" lon="-122.67016">
+      <name>Left</name>
+      <cmt>Turn left onto Spring Hill Rd</cmt>
+    </rtept>
+    <rtept lat="38.24269" lon="-122.75253">
+      <name>Right</name>
+      <cmt>Turn right onto Purvine Road</cmt>
+    </rtept>
+    <rtept lat="38.25244" lon="-122.73704">
+      <name>Sharp Right</name>
+      <cmt>Turn sharp right onto Middle Two Rock Road</cmt>
+    </rtept>
+    <rtept lat="38.24162" lon="-122.685409">
+      <name>Left</name>
+      <cmt>Turn left - back entrance of Wilson School</cmt>
+    </rtept>
+    <rtept lat="38.24162" lon="-122.685409">
+      <name>Left</name>
+      <cmt>Turn left onto Middle Two Rock Road</cmt>
+    </rtept>
+    <rtept lat="38.24194" lon="-122.678669">
+      <name>Right</name>
+      <cmt>Turn right onto Bodega Avenue</cmt>
+    </rtept>
+    <rtept lat="38.2355" lon="-122.66956">
+      <name>Sharp Right</name>
+      <cmt>Turn sharp right onto Eastman Lane</cmt>
+    </rtept>
+    <rtept lat="38.23542" lon="-122.67777">
+      <name>Left</name>
+      <cmt>Turn left onto Chapman Lane</cmt>
+    </rtept>
+    <rtept lat="38.22732" lon="-122.6773">
+      <name>Left</name>
+      <cmt>Turn left onto Chapman Lane</cmt>
+    </rtept>
+    <rtept lat="38.2274" lon="-122.66374">
+      <name>Sharp Right</name>
+      <cmt>Turn sharp right onto Western Avenue</cmt>
+    </rtept>
+    <rtept lat="38.223009" lon="-122.67016">
+      <name>Left</name>
+      <cmt>Turn Left onto Chileno Valley Road</cmt>
+    </rtept>
+    <rtept lat="38.19542" lon="-122.70786">
+      <name>Straight</name>
+      <cmt>Continue onto Wilson Hill Rd</cmt>
+    </rtept>
+    <rtept lat="38.16765" lon="-122.73145">
+      <name>Left</name>
+      <cmt>Turn left onto Hicks Valley Rd</cmt>
+    </rtept>
+    <rtept lat="38.14905" lon="-122.70259">
+      <name>Right</name>
+      <cmt>Turn right onto Pt. Reyes - Petaluma Rd/​Red Hill Rd</cmt>
+    </rtept>
+    <rtept lat="38.14258" lon="-122.70567">
+      <name>Left</name>
+      <cmt>Turn left onto Novato Blvd</cmt>
+    </rtept>
+    <rtept lat="38.11631" lon="-122.6501">
+      <name>Right</name>
+      <cmt>Turn right in to Stafford Lake Park</cmt>
+    </rtept>
+    <rtept lat="38.11583" lon="-122.64966">
+      <name>Right</name>
+      <cmt>Turn right</cmt>
+    </rtept>
+    <rtept lat="38.11364" lon="-122.65313">
+      <name>End</name>
+      <cmt>End of route</cmt>
+    </rtept>
+  </rte>
+</gpx>
