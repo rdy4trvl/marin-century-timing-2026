@@ -152,9 +152,19 @@ async function autoLoadConfig() {
         const config = await response.json();
         if (config.version !== 1 && config.version !== 2) return false;
 
-        // Restore state
+        // Restore state safely
         config.routes.forEach((saved, i) => {
-            if (i < state.routes.length) Object.assign(state.routes[i], saved);
+            if (i < state.routes.length) {
+                const target = state.routes[i];
+                if (saved.name) target.name = saved.name;
+                if (saved.miles) target.miles = saved.miles;
+                if (saved.riders) target.riders = saved.riders;
+                if (saved.noShowRate !== undefined) target.noShowRate = saved.noShowRate;
+                if (saved.speedTiers) target.speedTiers = [...saved.speedTiers];
+                if (saved.startTimes) target.startTimes = JSON.parse(JSON.stringify(saved.startTimes));
+                if (saved.color) target.color = saved.color;
+                // restStops handled below
+            }
         });
 
         if (config.tierWeights) state.tierWeights = config.tierWeights;
@@ -639,7 +649,10 @@ function renderSpeedTiers() {
 }
 
 function updateSpeedTier(routeIndex, tierIndex, value) {
+    console.log(`[DEBUG] updateSpeedTier START: route ${routeIndex}, tier ${tierIndex}, value ${value}`);
+    console.log(`[DEBUG] Before update: ${JSON.stringify(state.routes[routeIndex].speedTiers)}`);
     state.routes[routeIndex].speedTiers[tierIndex] = parseFloat(value) || 10;
+    console.log(`[DEBUG] After update: ${JSON.stringify(state.routes[routeIndex].speedTiers)}`);
     renderSpeedTiers();
 }
 
@@ -686,6 +699,8 @@ function bindSettingInputs() {
 
 // ===== SIMULATION =====
 function runSimulation() {
+    console.log(`[DEBUG] runSimulation START. Geronimo speedTiers: ${JSON.stringify(state.routes[0].speedTiers)}`);
+    
     // Validate inputs
     const loadedRoutes = state.routes.filter(r => r.gpxLoaded);
     if (loadedRoutes.length === 0) {
@@ -1086,6 +1101,8 @@ function createCaptainReportCard(report) {
 
 // ===== SAVE / LOAD =====
 function saveConfig() {
+    console.log(`[DEBUG] saveConfig START. Geronimo speedTiers: ${JSON.stringify(state.routes[0].speedTiers)}`);
+    
     const config = {
         version: 2,
         savedAt: new Date().toISOString(),
@@ -1137,10 +1154,18 @@ async function loadConfig(e) {
                 return;
             }
 
-            // Restore state
+            // Restore state safely
             config.routes.forEach((saved, i) => {
                 if (i < state.routes.length) {
-                    Object.assign(state.routes[i], saved);
+                    const target = state.routes[i];
+                    if (saved.name) target.name = saved.name;
+                    if (saved.miles) target.miles = saved.miles;
+                    if (saved.riders) target.riders = saved.riders;
+                    if (saved.noShowRate !== undefined) target.noShowRate = saved.noShowRate;
+                    if (saved.speedTiers) target.speedTiers = [...saved.speedTiers];
+                    if (saved.startTimes) target.startTimes = JSON.parse(JSON.stringify(saved.startTimes));
+                    if (saved.color) target.color = saved.color;
+                    // restStops handled below
                 }
             });
 

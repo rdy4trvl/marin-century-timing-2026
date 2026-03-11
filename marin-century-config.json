@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "savedAt": "2026-03-11T04:07:39.572Z",
+  "savedAt": "2026-03-11T04:17:12.346Z",
   "routes": [
     {
       "name": "Geronimo 37",
@@ -12,7 +12,7 @@
         15,
         13.5,
         12,
-        12
+        11
       ],
       "startTimes": [
         {
@@ -30,7 +30,7 @@
       ],
       "restStops": [
         {
-          "name": "Lagunitas Rest Stop",
+          "name": "Lagunitas Rest Stop 7:45 am - noon",
           "description": "Lagunitas Rest Stop",
           "segmentIndex": 55,
           "mile": 16.3,
@@ -94,12 +94,12 @@
           }
         },
         {
-          "name": "Congratulations",
-          "description": "Congratulations",
-          "segmentIndex": 149,
-          "mile": 37.14,
-          "lat": 38.1137,
-          "lon": -122.65314,
+          "name": "Water",
+          "description": "Water Stop",
+          "segmentIndex": 122,
+          "mile": 30.47,
+          "lat": 38.111326,
+          "lon": -122.720509,
           "distanceFromRoute": 0,
           "dwellTimes": {
             "max": 5,
@@ -110,12 +110,12 @@
           }
         },
         {
-          "name": "Water",
-          "description": "Water Stop",
-          "segmentIndex": 122,
-          "mile": 30.47,
-          "lat": 38.111326,
-          "lon": -122.720509,
+          "name": "Congratulations.  Course Completed!",
+          "description": "",
+          "segmentIndex": 149,
+          "mile": 37.14,
+          "lat": 38.1137,
+          "lon": -122.65314,
           "distanceFromRoute": 0,
           "dwellTimes": {
             "max": 5,
@@ -160,10 +160,10 @@
       ],
       "restStops": [
         {
-          "name": "Laguna Rest Stop",
-          "description": "Laguna Rest Stop",
-          "segmentIndex": 238,
-          "mile": 52.88,
+          "name": "Chileno Rest Stop",
+          "description": "",
+          "segmentIndex": 241,
+          "mile": 53.33,
           "lat": 38.199660335658,
           "lon": -122.71571904097448,
           "distanceFromRoute": 756,
@@ -176,10 +176,10 @@
           }
         },
         {
-          "name": "Tomales Rest Stop",
-          "description": "Tomales Rest Stop",
-          "segmentIndex": 149,
-          "mile": 30.56,
+          "name": "Tomales Rest Stop 9:45 am - 5 pm",
+          "description": "\"Tomales\" Rest Stop on left",
+          "segmentIndex": 152,
+          "mile": 31.01,
           "lat": 38.24539504280261,
           "lon": -122.90517537333596,
           "distanceFromRoute": 341,
@@ -192,13 +192,13 @@
           }
         },
         {
-          "name": "Pt Reyes Rest Stop",
-          "description": "Pt. Reyes Rest Stop",
-          "segmentIndex": 67,
-          "mile": 15.43,
-          "lat": 38.087355006748545,
-          "lon": -122.81288618616104,
-          "distanceFromRoute": 290,
+          "name": "West Marin School Rest Stop",
+          "description": "Rest Stop Open hours are...",
+          "segmentIndex": 62,
+          "mile": 14.3,
+          "lat": 38.07094587634042,
+          "lon": -122.80310061829886,
+          "distanceFromRoute": 189,
           "dwellTimes": {
             "max": 5,
             "upper": 7,
@@ -208,12 +208,12 @@
           }
         },
         {
-          "name": "Congratulations",
-          "description": "Congratulations",
-          "segmentIndex": 0,
-          "mile": 0.16,
-          "lat": 38.11358,
-          "lon": -122.65309,
+          "name": "Congratulations.  Course Completed!",
+          "description": "",
+          "segmentIndex": 291,
+          "mile": 63.91,
+          "lat": 38.11363,
+          "lon": -122.65311,
           "distanceFromRoute": 0,
           "dwellTimes": {
             "max": 5,
@@ -258,10 +258,10 @@
       ],
       "restStops": [
         {
-          "name": "Tomales Rest Stop",
-          "description": "Tomales Rest Stop",
-          "segmentIndex": 218,
-          "mile": 45.87,
+          "name": "Tomales Rest Stop 9:45 am - 5 pm",
+          "description": "\"Tomales\" Rest Stop on the LEFT. Open 9:45 am to 5 pm",
+          "segmentIndex": 219,
+          "mile": 46.26,
           "lat": 38.24540819093062,
           "lon": -122.90543112941393,
           "distanceFromRoute": 148,
@@ -274,9 +274,9 @@
           }
         },
         {
-          "name": "Lagunitas Rest Stop",
-          "description": "Lagunitas Rest Stop",
-          "segmentIndex": 57,
+          "name": "Lagunitas School Rest Stop 7:45 am to noon",
+          "description": "Lagunitas Rest Stop.  Open from 7:45 am to noon",
+          "segmentIndex": 56,
           "mile": 16.24,
           "lat": 38.01764,
           "lon": -122.67637,
@@ -290,10 +290,10 @@
           }
         },
         {
-          "name": "Petaluma Rest Stop",
-          "description": "Petaluma Rest Stop",
-          "segmentIndex": 355,
-          "mile": 82.42,
+          "name": "Petaluma Rest Stop. noon - 4 pm",
+          "description": "Rest Stop Wilson Elementary School - open noon to 4 pm",
+          "segmentIndex": 357,
+          "mile": 83.19,
           "lat": 38.24340116033264,
           "lon": -122.68566807692301,
           "distanceFromRoute": 342,
@@ -306,10 +306,10 @@
           }
         },
         {
-          "name": "Laguna Rest Stop",
-          "description": "Laguna Rest Stop",
-          "segmentIndex": 301,
-          "mile": 68.26,
+          "name": "Chileno Rest Stop",
+          "description": "",
+          "segmentIndex": 304,
+          "mile": 69.04,
           "lat": 38.19986811082856,
           "lon": -122.71576221320052,
           "distanceFromRoute": 699,
@@ -322,13 +322,13 @@
           }
         },
         {
-          "name": "Pt Reyes Rest Stop",
-          "description": "Pt Reyes Rest Stop",
-          "segmentIndex": 135,
-          "mile": 30.65,
-          "lat": 38.08704000000037,
-          "lon": -122.8128200000002,
-          "distanceFromRoute": 118,
+          "name": "West Marin School Rest Stop",
+          "description": "Rest Stop open",
+          "segmentIndex": 130,
+          "mile": 29.65,
+          "lat": 38.07099778000722,
+          "lon": -122.80301666399686,
+          "distanceFromRoute": 45,
           "dwellTimes": {
             "max": 5,
             "upper": 7,
@@ -338,10 +338,10 @@
           }
         },
         {
-          "name": "Congratulations",
-          "description": "Congratulations",
-          "segmentIndex": 433,
-          "mile": 99.67,
+          "name": "Congratulations!  Course End",
+          "description": "Cross the Finish Line and it's time to celebrate.",
+          "segmentIndex": 435,
+          "mile": 100.44,
           "lat": 38.11364,
           "lon": -122.65313,
           "distanceFromRoute": 0,
@@ -384,40 +384,8 @@
       ],
       "restStops": [
         {
-          "name": "Stinson Rest Stop",
-          "description": "Stinson Rest Stop",
-          "segmentIndex": 286,
-          "mile": 57.79,
-          "lat": 37.9095911677485,
-          "lon": -122.6558179290621,
-          "distanceFromRoute": 148,
-          "dwellTimes": {
-            "max": 5,
-            "upper": 7,
-            "mid": 10,
-            "lower": 12,
-            "min": 12
-          }
-        },
-        {
-          "name": "Pine Mountain Rest Stop",
-          "description": "Pine Mountain Rest Stop",
-          "segmentIndex": 120,
-          "mile": 24.42,
-          "lat": 37.96374732007712,
-          "lon": -122.62505767112077,
-          "distanceFromRoute": 456,
-          "dwellTimes": {
-            "max": 5,
-            "upper": 7,
-            "mid": 10,
-            "lower": 12,
-            "min": 12
-          }
-        },
-        {
-          "name": "East Peak",
-          "description": "East Peak Rest Stop",
+          "name": "Rest Stop at East Peak 8:45 am to 11:30 am",
+          "description": "Water Stop at East Peak. Open 8:45 am to 11:30 am",
           "segmentIndex": 189,
           "mile": 37.89,
           "lat": 37.92736654683877,
@@ -432,13 +400,13 @@
           }
         },
         {
-          "name": "Pt Reyes Rest Stop",
-          "description": "Pt Reyes Rest Stop",
-          "segmentIndex": 396,
-          "mile": 78.94,
-          "lat": 38.08719,
-          "lon": -122.81288,
-          "distanceFromRoute": 122,
+          "name": "Pine Mountain Rest Stop 7:30 am to 9:30 am",
+          "description": "Pine Mountain - open 7:30 am to 9:30 am",
+          "segmentIndex": 120,
+          "mile": 24.42,
+          "lat": 37.96374732007712,
+          "lon": -122.62505767112077,
+          "distanceFromRoute": 456,
           "dwellTimes": {
             "max": 5,
             "upper": 7,
@@ -448,13 +416,29 @@
           }
         },
         {
-          "name": "Congratulations",
-          "description": "Congratulations",
-          "segmentIndex": 460,
-          "mile": 94.26,
-          "lat": 38.11409,
-          "lon": -122.65337,
-          "distanceFromRoute": 0,
+          "name": "Stinson Rest Stop  10 am to 2:15 pm",
+          "description": "Stinson Elementary Rest Stop. Open 10 am to 2:15 pm",
+          "segmentIndex": 286,
+          "mile": 57.79,
+          "lat": 37.9095911677485,
+          "lon": -122.6558179290621,
+          "distanceFromRoute": 148,
+          "dwellTimes": {
+            "max": 5,
+            "upper": 7,
+            "mid": 10,
+            "lower": 12,
+            "min": 12
+          }
+        },
+        {
+          "name": "West Marin Rest Stop",
+          "description": "West Marin Rest Stop Open from xx to xx",
+          "segmentIndex": 394,
+          "mile": 77.83,
+          "lat": 38.071007696654156,
+          "lon": -122.80297383891048,
+          "distanceFromRoute": 195,
           "dwellTimes": {
             "max": 5,
             "upper": 7,
@@ -482,11 +466,27 @@
         {
           "name": "Congratulations!",
           "description": "Time to Celebrate!",
-          "segmentIndex": 460,
-          "mile": 94.26,
+          "segmentIndex": 457,
+          "mile": 92.2,
           "lat": 38.11409,
           "lon": -122.65337,
           "distanceFromRoute": 0,
+          "dwellTimes": {
+            "max": 5,
+            "upper": 7,
+            "mid": 10,
+            "lower": 12,
+            "min": 12
+          }
+        },
+        {
+          "name": "Pt Reyes Rest Stop",
+          "description": "Pt Reyes Rest Stop",
+          "segmentIndex": 393,
+          "mile": 77.67,
+          "lat": 38.081720000000004,
+          "lon": -122.80875,
+          "distanceFromRoute": 3771,
           "dwellTimes": {
             "max": 5,
             "upper": 7,
@@ -522,8 +522,8 @@
       ],
       "restStops": [
         {
-          "name": "Stinson Rest Stop",
-          "description": "Stinson Rest Stop",
+          "name": "Stinson Rest Stop  10 am to 2:15 pm",
+          "description": "Stinson Elementary Rest Stop. Open 10 am to 2:15 pm",
           "segmentIndex": 286,
           "mile": 57.79,
           "lat": 37.9095911677485,
@@ -538,10 +538,10 @@
           }
         },
         {
-          "name": "Tomales Rest Stop",
-          "description": "Tomales Rest Stop",
-          "segmentIndex": 451,
-          "mile": 93.85,
+          "name": "Tomales Rest Stop 9:45 am to 5 pm",
+          "description": "Rest Stop on Left. Open hours 9:45 am to 5 pm",
+          "segmentIndex": 453,
+          "mile": 94.31,
           "lat": 38.24532888803242,
           "lon": -122.90545465930913,
           "distanceFromRoute": 547,
@@ -554,8 +554,8 @@
           }
         },
         {
-          "name": "Pine Mountain Rest Stop",
-          "description": "Pine Mountain Rest Stop",
+          "name": "Pine Mountain Rest Stop 7:30 am to 9:30 am",
+          "description": "Pine Mountain - open 7:30 am to 9:30 am",
           "segmentIndex": 120,
           "mile": 24.42,
           "lat": 37.96374732007712,
@@ -570,8 +570,8 @@
           }
         },
         {
-          "name": "East Peak",
-          "description": "East Peak Rest Stop",
+          "name": "Mini Rest Stop at East Peak 8:45 am to 11:30 am",
+          "description": "Rest Stop at East Peak. Open 8:45 am to 11:30 am",
           "segmentIndex": 189,
           "mile": 37.89,
           "lat": 37.92736654683877,
@@ -586,10 +586,10 @@
           }
         },
         {
-          "name": "Laguna Rest Stop",
-          "description": "Laguna Rest Stop",
-          "segmentIndex": 530,
-          "mile": 116.5,
+          "name": "Chileno Rest Stop",
+          "description": "",
+          "segmentIndex": 532,
+          "mile": 116.97,
           "lat": 38.19961939549228,
           "lon": -122.7151929442357,
           "distanceFromRoute": 0,
@@ -602,29 +602,13 @@
           }
         },
         {
-          "name": "Pt Reyes Rest Stop",
-          "description": "Pt Reyes Rest Stop",
-          "segmentIndex": 385,
-          "mile": 78.89,
-          "lat": 38.08715207449043,
-          "lon": -122.81286895896912,
-          "distanceFromRoute": 242,
-          "dwellTimes": {
-            "max": 5,
-            "upper": 7,
-            "mid": 10,
-            "lower": 12,
-            "min": 12
-          }
-        },
-        {
-          "name": "Congratulations",
-          "description": "Congratulations",
-          "segmentIndex": 560,
-          "mile": 126.86,
-          "lat": 38.11409,
-          "lon": -122.65337,
-          "distanceFromRoute": 0,
+          "name": "West Marin Elementary School",
+          "description": "West Marin Rest Stop Open Hours xx to xx",
+          "segmentIndex": 382,
+          "mile": 77.87,
+          "lat": 38.070983610617674,
+          "lon": -122.8030348770985,
+          "distanceFromRoute": 38,
           "dwellTimes": {
             "max": 5,
             "upper": 7,
@@ -652,8 +636,8 @@
         {
           "name": "Congratulations!",
           "description": "Time to Celebrate!",
-          "segmentIndex": 560,
-          "mile": 126.86,
+          "segmentIndex": 562,
+          "mile": 127.33,
           "lat": 38.11409,
           "lon": -122.65337,
           "distanceFromRoute": 0,
