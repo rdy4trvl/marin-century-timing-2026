@@ -43,6 +43,9 @@
             <button class="tab-btn" data-tab="results">
                 <span class="tab-label">Results</span>
             </button>
+            <button class="tab-btn" data-tab="police">
+                <span class="tab-label">Police / CHP</span>
+            </button>
             <button class="tab-btn" data-tab="reports">
                 <span class="tab-label">Reports</span>
             </button>
@@ -276,6 +279,13 @@
                     </tbody>
                 </table>
             </div>
+
+            <!-- Browser Storage -->
+            <div class="panel">
+                <h3>Browser Saved Settings</h3>
+                <p class="help-text">Settings are automatically saved to this browser when you click <strong>Save</strong>. They reload on your next visit without needing to upload a file.</p>
+                <button class="btn btn-secondary" onclick="window.app.clearBrowserSavedSettings()">🗑️ Reset to Server Defaults</button>
+            </div>
             </div>
         </section>
 
@@ -350,6 +360,33 @@
             </div>
         </section>
 
+        <!-- ===== POLICE TAB ===== -->
+        <section id="tab-police" class="tab-content">
+            <div class="tab-header">
+                <h2>Police / CHP Schedule</h2>
+                <p>Rider volume at CHP traffic-control positions. Add <strong>CHP …</strong> waypoints to your GPX routes in RideWithGPS to populate this table.</p>
+            </div>
+
+            <div id="police-empty" class="empty-state">
+                <div class="empty-icon">🚔</div>
+                <h3>No Police Data Yet</h3>
+                <p>Run the simulation after loading GPX files that include <strong>CHP …</strong> waypoints.</p>
+            </div>
+
+            <div id="police-content" class="hidden">
+                <div class="panel">
+                    <h3>CHP Position Schedule (All Routes Combined)</h3>
+                    <p class="help-text"><em>Arrive By</em> = 30 min before first rider. <em>Last Rider</em> = officer can be released after this time.</p>
+                    <div class="table-scroll">
+                        <table id="police-schedule" class="data-table results-table">
+                            <thead id="police-schedule-head"></thead>
+                            <tbody id="police-schedule-body"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <!-- ===== REPORTS TAB ===== -->
         <section id="tab-reports" class="tab-content">
             <div class="tab-header">
@@ -376,7 +413,7 @@
         </section>
     </main>
 
-    <script type="module" src="js/app.js?v=6"></script>
+    <script type="module" src="js/app.js?v=7"></script>
 </body>
 
 </html>

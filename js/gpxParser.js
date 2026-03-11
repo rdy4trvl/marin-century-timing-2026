@@ -29,14 +29,20 @@ export class GPXParser {
         // Extract all waypoints
         const allWaypoints = this.extractWaypoints(doc);
 
-        // Separate meaningful stops from directional cues
-        const { meaningfulStops, directionalWaypoints } = this.filterWaypoints(allWaypoints);
+        // Separate meaningful stops, police positions, and directional cues
+        const { meaningfulStops, policePoints, directionalWaypoints } = this.filterWaypoints(allWaypoints);
 
         // Create segments from trackpoints
         const segments = this.createSegments(trackpoints);
 
         // Match meaningful waypoints to nearest segments (these become rest stops)
         const restStops = this.matchWaypointsToSegments(meaningfulStops, segments);
+
+        // Match police waypoints to nearest segments (0-dwell)
+        const policeStops = this.matchWaypointsToSegments(policePoints, segments).map(ps => ({
+            ...ps,
+            dwellTimes: { max: 0, upper: 0, mid: 0, lower: 0, min: 0 }
+        }));
 
         // Also match ALL waypoints to segments for tooltip display
         const allWaypointsBySegment = this.mapAllWaypointsToSegments(allWaypoints, segments);
@@ -56,6 +62,7 @@ export class GPXParser {
             trackpoints,
             segments,
             restStops,
+            policeStops,
             waypoints: allWaypoints,
             waypointsBySegment: allWaypointsBySegment,
             stats: {
@@ -65,6 +72,7 @@ export class GPXParser {
                 segmentCount: segments.length,
                 waypointCount: allWaypoints.length,
                 restStopCount: meaningfulStops.length,
+                policeCount: policePoints.length,
             }
         };
     }
@@ -128,11 +136,10 @@ export class GPXParser {
     }
 
     /**
-     * Filter waypoints into meaningful stops vs directional cues.
-     * Only waypoints matching key words become rest stops.
+     * Filter waypoints into rest stops, police/CHP positions, and directional cues.
      */
     filterWaypoints(waypoints) {
-        // Keywords that indicate a meaningful stop (case-insensitive)
+        // Keywords that indicate a meaningful rest stop (case-insensitive)
         const stopKeywords = [
             'rest stop', 'rest', 'rs', 'water stop', 'water',
             'summit', 'peak', 'school', 'elementary',
@@ -140,6 +147,9 @@ export class GPXParser {
             'lunch', 'food', 'aid station', 'checkpoint', 'check point',
             'park', 'civic center'
         ];
+
+        // Keywords that indicate a police / traffic-control position
+        const policeKeywords = ['chp', 'police', 'traffic control', 'traffic officer'];
 
         // Keywords that indicate directional cues to EXCLUDE
         const directionalKeywords = [
@@ -150,21 +160,26 @@ export class GPXParser {
         ];
 
         const meaningfulStops = [];
+        const policePoints = [];
         const directionalWaypoints = [];
 
         for (const wp of waypoints) {
             const nameLower = wp.name.toLowerCase();
 
-            // Check if it's a directional cue first
-            const isDirectional = directionalKeywords.some(kw => nameLower.includes(kw));
-            if (isDirectional) {
+            // Directional cues first
+            if (directionalKeywords.some(kw => nameLower.includes(kw))) {
                 directionalWaypoints.push(wp);
                 continue;
             }
 
-            // Check if it matches a meaningful stop keyword
-            const isMeaningful = stopKeywords.some(kw => nameLower.includes(kw));
-            if (isMeaningful) {
+            // Police / CHP positions
+            if (policeKeywords.some(kw => nameLower.includes(kw))) {
+                policePoints.push(wp);
+                continue;
+            }
+
+            // Meaningful rest/water stops
+            if (stopKeywords.some(kw => nameLower.includes(kw))) {
                 meaningfulStops.push(wp);
             } else {
                 // Unknown — treat as directional/skip by default
@@ -172,7 +187,7 @@ export class GPXParser {
             }
         }
 
-        return { meaningfulStops, directionalWaypoints };
+        return { meaningfulStops, policePoints, directionalWaypoints };
     }
 
     /**
