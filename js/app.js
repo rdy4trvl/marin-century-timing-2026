@@ -1112,8 +1112,10 @@ function saveConfig() {
     a.download = `marin-century-config.json`;
     document.body.appendChild(a);
     a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+    setTimeout(() => {
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }, 100);
 }
 
 async function loadConfig(e) {
