@@ -104,7 +104,7 @@ export class Aggregation {
                 if (!segResult) continue;
 
                 // Rest stop timing
-                const dwellMinutes = rs.dwellTimes[slug.tierName] || 10;
+                const dwellMinutes = rs.dwellTimes?.[slug.tierName] ?? 10;
                 const dwellHours = dwellMinutes / 60;
                 const arrivalTime = segResult.departureTime; // arrive at rest stop after traversing segment
                 const departureTime = arrivalTime + dwellHours;
@@ -235,6 +235,22 @@ export class Aggregation {
             peakRiders: peakCount,
             hourlyBreakdown: activeBands
         };
+    }
+
+    /**
+     * Generate police position summary for a single route simulation.
+     * Identical to createRestStopSummary but uses policePoints (0 dwell).
+     */
+    createPoliceSummary(simulationResult, policePoints) {
+        return this.createRestStopSummary(simulationResult, policePoints);
+    }
+
+    /**
+     * Aggregate police position data across all routes.
+     * Identical logic to aggregateRestStops.
+     */
+    aggregatePolicePoints(allRouteData) {
+        return this.aggregateRestStops(allRouteData);
     }
 
     /**

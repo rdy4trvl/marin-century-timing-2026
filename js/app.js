@@ -27,6 +27,7 @@ const state = {
         speedTiers: [...DEFAULT_SPEED_TIERS],
         startTimes: [], // will be initialized with default slots
         restStops: [],
+        policePoints: [],
     })),
     tierWeights: [...DEFAULT_TIER_WEIGHTS],
     speedModel: {
@@ -41,6 +42,7 @@ const state = {
     },
     simulationResults: null,
     aggregatedResults: null,
+    aggregatedPolice: null,
 };
 
 // Initialize default start times for each route
@@ -115,7 +117,12 @@ async function preloadGPXFiles() {
                     route.parsedRoute = parsed;
                     route.gpxLoaded = true;
                     route.gpxRawXml = xmlText;
-                    route.restStops = parsed.restStops;
+
+                    // GPX wins: use GPX names/locations but preserve saved dwell times
+                    route.restStops = overlayDwellTimes(parsed.restStops, route.restStopsFromConfig || []);
+                    delete route.restStopsFromConfig;
+
+                    route.policePoints = parsed.policeStops || [];
                     loadedCount++;
                 }
             } catch (err) {
@@ -123,92 +130,140 @@ async function preloadGPXFiles() {
             }
         }
     }
-    
+
     if (loadedCount > 0) {
         state.simulationResults = null;
-        
-        // After loading GPX files, apply any customized rest stops from the loaded config
-        state.routes.forEach(route => {
-             // If route has a config loaded (which might have restored customized restStops)
-             // but we just grabbed fresh GPX, we should ensure the customized rest stops
-             // overwrite the default GPX ones, matching by segmentIndex or name
-             if (route.restStopsFromConfig) {
-                 route.restStops = route.restStopsFromConfig;
-                 delete route.restStopsFromConfig;
-             }
-        });
-
         renderRouteCards();
         updateStatusBar();
     }
 }
 
+/**
+ * Apply saved dwell times onto freshly-GPX-parsed rest stops.
+ * GPX provides authoritative name/location; config only contributes dwell times.
+ * Matches by name (case-insensitive) first, then by mile proximity.
+ */
+function overlayDwellTimes(gpxStops, savedStops) {
+    if (!savedStops || savedStops.length === 0) return gpxStops;
+    return gpxStops.map(gpxStop => {
+        const match = savedStops.find(s =>
+            s.name.toLowerCase().trim() === gpxStop.name.toLowerCase().trim()
+        ) || savedStops.find(s =>
+            Math.abs((s.mile || 0) - (gpxStop.mile || 0)) < 1.5
+        );
+        if (match?.dwellTimes) {
+            return { ...gpxStop, dwellTimes: { ...match.dwellTimes } };
+        }
+        return gpxStop;
+    });
+}
+
+const LS_KEY = 'marin-century-config-v3';
+
+function saveToLocalStorage() {
+    const config = buildConfigObject();
+    try {
+        localStorage.setItem(LS_KEY, JSON.stringify(config));
+    } catch (e) {
+        console.warn('Could not save to localStorage:', e);
+    }
+}
+
+function buildConfigObject() {
+    return {
+        version: 3,
+        savedAt: new Date().toISOString(),
+        routes: state.routes.map(r => ({
+            name: r.name,
+            miles: r.miles,
+            riders: r.riders,
+            noShowRate: r.noShowRate,
+            speedTiers: r.speedTiers,
+            startTimes: r.startTimes,
+            restStops: r.restStops,
+            color: r.color,
+        })),
+        tierWeights: state.tierWeights,
+        speedModel: state.speedModel,
+        weather: state.weather,
+    };
+}
+
 async function autoLoadConfig() {
+    // Check browser localStorage first — most recent user changes live here
+    try {
+        const stored = localStorage.getItem(LS_KEY);
+        if (stored) {
+            const config = JSON.parse(stored);
+            if (config.version >= 1 && config.version <= 3) {
+                applyConfig(config);
+                await preloadGPXFiles();
+                console.log('Loaded config from browser storage');
+                return true;
+            }
+        }
+    } catch (e) {
+        console.warn('Could not read localStorage config:', e);
+    }
+
+    // Fall back to committed config.json on the server
     try {
         const cacheBuster = new Date().getTime();
         const response = await fetch(`marin-century-config.json?v=${cacheBuster}`);
         if (!response.ok) return false;
-        
+
         const config = await response.json();
-        if (config.version !== 1 && config.version !== 2) return false;
+        if (config.version < 1 || config.version > 3) return false;
 
-        // Restore state safely
-        config.routes.forEach((saved, i) => {
-            if (i < state.routes.length) {
-                const target = state.routes[i];
-                if (saved.name) target.name = saved.name;
-                if (saved.miles) target.miles = saved.miles;
-                if (saved.riders) target.riders = saved.riders;
-                if (saved.noShowRate !== undefined) target.noShowRate = saved.noShowRate;
-                if (saved.speedTiers) target.speedTiers = [...saved.speedTiers];
-                if (saved.startTimes) target.startTimes = JSON.parse(JSON.stringify(saved.startTimes));
-                if (saved.color) target.color = saved.color;
-                // restStops handled below
-            }
-        });
-
-        if (config.tierWeights) state.tierWeights = config.tierWeights;
-        if (config.speedModel) Object.assign(state.speedModel, config.speedModel);
-        if (config.weather) Object.assign(state.weather, config.weather);
-
-        // Step 2: For each route loaded from config, save its rest stops temporarily
-        // so `preloadGPXFiles` can apply them after parsing the fresh GPX data.
-        state.routes.forEach((route, i) => {
-            if (config.routes[i] && config.routes[i].restStops) {
-                route.restStopsFromConfig = config.routes[i].restStops;
-            }
-        });
-
-        // Re-render early so settings populate immediately
-        renderRidersTab();
-        renderSettingsTab();
-
-        // Update settings UI values early
-        document.getElementById('uphill-factor').value = state.speedModel.uphillFactor;
-        document.getElementById('downhill-factor').value = state.speedModel.downhillFactor;
-        document.getElementById('min-speed').value = state.speedModel.minSpeed;
-        document.getElementById('max-speed').value = state.speedModel.maxSpeed;
-        document.getElementById('weather-slider').value = Math.round(state.weather.factor * 100);
-        document.getElementById('weather-value').textContent = `${Math.round(state.weather.factor * 100)}%`;
-        document.getElementById('weather-start-hour').value = state.weather.startHour;
-        
-        const weightIds = ['weight-max', 'weight-upper', 'weight-mid', 'weight-lower', 'weight-min'];
-        weightIds.forEach((id, i) => {
-            document.getElementById(id).value = Math.round(state.tierWeights[i] * 100);
-        });
-
-        // Step 3: Fetch the actual GPX map data directly from the files
+        applyConfig(config);
         await preloadGPXFiles();
-
-        // Remaining re-renders after GPX is done if needed
-
-        
-        console.log('Successfully auto-loaded marin-century-config.json');
+        console.log('Loaded config from server config.json');
         return true;
     } catch (err) {
         console.log('No marin-century-config.json found (using defaults).', err.message);
         return false;
     }
+}
+
+/**
+ * Apply a config object to state and update all UI elements.
+ * Used by both localStorage load and server config.json load.
+ */
+function applyConfig(config) {
+    config.routes.forEach((saved, i) => {
+        if (i >= state.routes.length) return;
+        const target = state.routes[i];
+        if (saved.name) target.name = saved.name;
+        if (saved.miles) target.miles = saved.miles;
+        if (saved.riders) target.riders = saved.riders;
+        if (saved.noShowRate !== undefined) target.noShowRate = saved.noShowRate;
+        if (saved.speedTiers) target.speedTiers = [...saved.speedTiers];
+        if (saved.startTimes) target.startTimes = JSON.parse(JSON.stringify(saved.startTimes));
+        if (saved.color) target.color = saved.color;
+        // Stash saved rest stops so preloadGPXFiles can overlay dwell times onto fresh GPX
+        if (saved.restStops) target.restStopsFromConfig = saved.restStops;
+    });
+
+    if (config.tierWeights) state.tierWeights = [...config.tierWeights];
+    if (config.speedModel) Object.assign(state.speedModel, config.speedModel);
+    if (config.weather) Object.assign(state.weather, config.weather);
+
+    // Refresh UI
+    renderRidersTab();
+    renderSettingsTab();
+
+    document.getElementById('uphill-factor').value = state.speedModel.uphillFactor;
+    document.getElementById('downhill-factor').value = state.speedModel.downhillFactor;
+    document.getElementById('min-speed').value = state.speedModel.minSpeed;
+    document.getElementById('max-speed').value = state.speedModel.maxSpeed;
+    document.getElementById('weather-slider').value = Math.round(state.weather.factor * 100);
+    document.getElementById('weather-value').textContent = `${Math.round(state.weather.factor * 100)}%`;
+    document.getElementById('weather-start-hour').value = state.weather.startHour;
+
+    const weightIds = ['weight-max', 'weight-upper', 'weight-mid', 'weight-lower', 'weight-min'];
+    weightIds.forEach((id, i) => {
+        document.getElementById(id).value = Math.round(state.tierWeights[i] * 100);
+    });
 }
 
 // ===== TAB NAVIGATION =====
@@ -335,10 +390,15 @@ async function handleGPXUpload(routeIndex, file) {
     try {
         const xmlText = await file.text();
         const parsed = gpxParser.parseXML(xmlText);
-        state.routes[routeIndex].parsedRoute = parsed;
-        state.routes[routeIndex].gpxLoaded = true;
-        state.routes[routeIndex].gpxRawXml = xmlText; // Store for save/load
-        state.routes[routeIndex].restStops = parsed.restStops;
+        const route = state.routes[routeIndex];
+
+        route.parsedRoute = parsed;
+        route.gpxLoaded = true;
+        route.gpxRawXml = xmlText;
+
+        // GPX wins: preserve any existing dwell times when re-uploading
+        route.restStops = overlayDwellTimes(parsed.restStops, route.restStops || []);
+        route.policePoints = parsed.policeStops || [];
         state.simulationResults = null;
 
         renderRouteCards();
@@ -779,10 +839,23 @@ function runSimulation() {
     // Aggregate rest stops across routes
     const aggregatedRestStops = aggregation.aggregateRestStops(allRestStopSummaries);
 
+    // Police point summaries
+    const allPoliceSummaries = [];
+    for (const route of state.routes) {
+        if (!route.gpxLoaded || !route.policePoints?.length) continue;
+        const routeResult = allResults.find(r => r.routeName === route.name);
+        if (!routeResult) continue;
+        const policeSummary = aggregation.createPoliceSummary(routeResult.simResult, route.policePoints);
+        allPoliceSummaries.push({ routeName: route.name, summaries: policeSummary });
+    }
+    const aggregatedPolice = aggregation.aggregatePolicePoints(allPoliceSummaries);
+
     state.simulationResults = allResults;
     state.aggregatedResults = aggregatedRestStops;
+    state.aggregatedPolice = aggregatedPolice;
 
     renderResults();
+    renderPolice();
     renderReports();
     updateStatusBar();
 
@@ -1099,46 +1172,97 @@ function createCaptainReportCard(report) {
     return card;
 }
 
+// ===== POLICE TAB =====
+function renderPolice() {
+    const emptyEl = document.getElementById('police-empty');
+    const contentEl = document.getElementById('police-content');
+    if (!emptyEl || !contentEl) return;
+
+    if (!state.aggregatedPolice || state.aggregatedPolice.length === 0) {
+        emptyEl.classList.remove('hidden');
+        contentEl.classList.add('hidden');
+        return;
+    }
+
+    emptyEl.classList.add('hidden');
+    contentEl.classList.remove('hidden');
+
+    const timeBands = aggregation.getTimeBands();
+    const thead = document.getElementById('police-schedule-head');
+    const tbody = document.getElementById('police-schedule-body');
+
+    thead.innerHTML = `<tr>
+        <th>CHP / Police Position</th>
+        <th>Routes</th>
+        <th>Arrive By</th>
+        <th>First Rider</th>
+        <th>Peak</th>
+        <th>Last Rider</th>
+        <th>Total</th>
+        ${timeBands.map(b => `<th class="heat-cell angled-header"><span>${b.label}</span></th>`).join('')}
+    </tr>`;
+
+    tbody.innerHTML = '';
+    const maxCount = Math.max(...state.aggregatedPolice.flatMap(p => p.bandCounts), 1);
+
+    state.aggregatedPolice.forEach(pt => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td><strong>${pt.name}</strong></td>
+            <td style="font-size:0.75rem; color:var(--text-muted)">${pt.routes.join(', ')}</td>
+            <td>${aggregation.formatTimeShort(pt.setupTime)}</td>
+            <td>${aggregation.formatTimeShort(pt.openTime)}</td>
+            <td>${pt.peakBand} <span style="color:var(--warning)">(${pt.peakCount})</span></td>
+            <td>${aggregation.formatTimeShort(pt.closeTime)}</td>
+            <td class="riders-col">${pt.totalRiders}</td>
+            ${pt.bandCounts.map(c => {
+            const level = getHeatLevel(c, maxCount);
+            return `<td class="heat-cell heat-${level}">${c || ''}</td>`;
+        }).join('')}
+        `;
+        tbody.appendChild(row);
+    });
+}
+
 // ===== SAVE / LOAD =====
 function saveConfig() {
-    console.log(`[DEBUG] saveConfig START. Geronimo speedTiers: ${JSON.stringify(state.routes[0].speedTiers)}`);
-    
-    const config = {
-        version: 2,
-        savedAt: new Date().toISOString(),
-        routes: state.routes.map(r => ({
-            name: r.name,
-            miles: r.miles,
-            riders: r.riders,
-            noShowRate: r.noShowRate,
-            speedTiers: r.speedTiers,
-            startTimes: r.startTimes,
-            restStops: r.restStops,
-            color: r.color
-            // gpxRawXml: no longer saving raw GPX data in config
-        })),
-        tierWeights: state.tierWeights,
-        speedModel: state.speedModel,
-        weather: state.weather,
-    };
+    // 1. Save to browser localStorage immediately — no file needed
+    saveToLocalStorage();
+    showToast('✅ Settings saved to browser');
 
+    // 2. Also download the config file (for committing to GitHub / backup)
+    const config = buildConfigObject();
     const blob = new Blob([JSON.stringify(config, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.style.display = 'none';
     a.href = url;
-    a.download = `marin-century-config.json`;
+    a.download = 'marin-century-config.json';
     document.body.appendChild(a);
-    
-    // Dispatch a MouseEvent instead of calling .click() for strict browsers
     const e = document.createEvent('MouseEvents');
     e.initEvent('click', true, true);
     a.dispatchEvent(e);
-    
-    setTimeout(() => {
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-    }, 100);
+    setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(url); }, 100);
+}
+
+function showToast(msg) {
+    let toast = document.getElementById('save-toast');
+    if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'save-toast';
+        toast.style.cssText = 'position:fixed;bottom:24px;right:24px;background:var(--success,#10b981);color:#fff;padding:10px 18px;border-radius:8px;font-weight:600;font-size:0.9rem;z-index:9999;opacity:0;transition:opacity 0.3s';
+        document.body.appendChild(toast);
+    }
+    toast.textContent = msg;
+    toast.style.opacity = '1';
+    clearTimeout(toast._timeout);
+    toast._timeout = setTimeout(() => { toast.style.opacity = '0'; }, 3000);
+}
+
+function clearBrowserSavedSettings() {
+    if (!confirm('Clear browser-saved settings and reload from server defaults?')) return;
+    localStorage.removeItem(LS_KEY);
+    window.location.reload();
 }
 
 async function loadConfig(e) {
@@ -1149,63 +1273,15 @@ async function loadConfig(e) {
     reader.onload = async () => {
         try {
             const config = JSON.parse(reader.result);
-            if (config.version !== 1 && config.version !== 2) {
+            if (config.version < 1 || config.version > 3) {
                 alert('Unsupported config file version.');
                 return;
             }
-
-            // Restore state safely
-            config.routes.forEach((saved, i) => {
-                if (i < state.routes.length) {
-                    const target = state.routes[i];
-                    if (saved.name) target.name = saved.name;
-                    if (saved.miles) target.miles = saved.miles;
-                    if (saved.riders) target.riders = saved.riders;
-                    if (saved.noShowRate !== undefined) target.noShowRate = saved.noShowRate;
-                    if (saved.speedTiers) target.speedTiers = [...saved.speedTiers];
-                    if (saved.startTimes) target.startTimes = JSON.parse(JSON.stringify(saved.startTimes));
-                    if (saved.color) target.color = saved.color;
-                    // restStops handled below
-                }
-            });
-
-            if (config.tierWeights) state.tierWeights = config.tierWeights;
-            if (config.speedModel) Object.assign(state.speedModel, config.speedModel);
-            if (config.weather) Object.assign(state.weather, config.weather);
-
-            // Step 2: Store the loaded rest stops so preloadGPXFiles can apply them
-            state.routes.forEach((route, i) => {
-                 if (config.routes[i] && config.routes[i].restStops) {
-                     route.restStopsFromConfig = config.routes[i].restStops;
-                 }
-            });
-
-            // Re-render early so settings populate immediately
-            renderRidersTab();
-            renderSettingsTab();
-
-            // Update settings UI values
-            document.getElementById('uphill-factor').value = state.speedModel.uphillFactor;
-            document.getElementById('downhill-factor').value = state.speedModel.downhillFactor;
-            document.getElementById('min-speed').value = state.speedModel.minSpeed;
-            document.getElementById('max-speed').value = state.speedModel.maxSpeed;
-            document.getElementById('weather-slider').value = Math.round(state.weather.factor * 100);
-            document.getElementById('weather-value').textContent = `${Math.round(state.weather.factor * 100)}%`;
-            document.getElementById('weather-start-hour').value = state.weather.startHour;
-
-            const weightIds = ['weight-max', 'weight-upper', 'weight-mid', 'weight-lower', 'weight-min'];
-            weightIds.forEach((id, i) => {
-                document.getElementById(id).value = Math.round(state.tierWeights[i] * 100);
-            });
-
-            // Step 3: Load fresh GPX data
+            applyConfig(config);
             await preloadGPXFiles();
-
-            // Remaining re-renders after GPX is done if needed
-
-
-            const msg = 'Configuration loaded successfully. Processing GPX files...';
-            alert(msg);
+            // Save uploaded config to localStorage so it persists
+            saveToLocalStorage();
+            showToast('✅ Config loaded and saved to browser');
         } catch (err) {
             alert('Error loading config: ' + err.message);
         }
@@ -1244,4 +1320,5 @@ window.app = {
     updateNoShow,
     updateStartTime,
     updateSpeedTier,
+    clearBrowserSavedSettings,
 };
