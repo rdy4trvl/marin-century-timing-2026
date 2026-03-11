@@ -168,14 +168,11 @@ async function autoLoadConfig() {
             }
         });
 
-        // Step 3: Fetch the actual GPX map data directly from the files
-        await preloadGPXFiles();
-
-        // Re-render everything
+        // Re-render early so settings populate immediately
         renderRidersTab();
         renderSettingsTab();
 
-        // Update settings UI values
+        // Update settings UI values early
         document.getElementById('uphill-factor').value = state.speedModel.uphillFactor;
         document.getElementById('downhill-factor').value = state.speedModel.downhillFactor;
         document.getElementById('min-speed').value = state.speedModel.minSpeed;
@@ -183,11 +180,17 @@ async function autoLoadConfig() {
         document.getElementById('weather-slider').value = Math.round(state.weather.factor * 100);
         document.getElementById('weather-value').textContent = `${Math.round(state.weather.factor * 100)}%`;
         document.getElementById('weather-start-hour').value = state.weather.startHour;
-
+        
         const weightIds = ['weight-max', 'weight-upper', 'weight-mid', 'weight-lower', 'weight-min'];
         weightIds.forEach((id, i) => {
             document.getElementById(id).value = Math.round(state.tierWeights[i] * 100);
         });
+
+        // Step 3: Fetch the actual GPX map data directly from the files
+        await preloadGPXFiles();
+
+        // Remaining re-renders after GPX is done if needed
+
         
         console.log('Successfully auto-loaded marin-century-config.json');
         return true;
@@ -1140,10 +1143,7 @@ async function loadConfig(e) {
                  }
             });
 
-            // Step 3: Load fresh GPX data
-            await preloadGPXFiles();
-
-            // Re-render everything
+            // Re-render early so settings populate immediately
             renderRidersTab();
             renderSettingsTab();
 
@@ -1160,6 +1160,12 @@ async function loadConfig(e) {
             weightIds.forEach((id, i) => {
                 document.getElementById(id).value = Math.round(state.tierWeights[i] * 100);
             });
+
+            // Step 3: Load fresh GPX data
+            await preloadGPXFiles();
+
+            // Remaining re-renders after GPX is done if needed
+
 
             const msg = 'Configuration loaded successfully. Processing GPX files...';
             alert(msg);
