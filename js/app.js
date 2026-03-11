@@ -640,6 +640,7 @@ function renderSpeedTiers() {
 
 function updateSpeedTier(routeIndex, tierIndex, value) {
     state.routes[routeIndex].speedTiers[tierIndex] = parseFloat(value) || 10;
+    renderSpeedTiers();
 }
 
 function bindWeightInputs() {
