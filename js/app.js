@@ -1111,7 +1111,12 @@ function saveConfig() {
     a.href = url;
     a.download = `marin-century-config.json`;
     document.body.appendChild(a);
-    a.click();
+    
+    // Dispatch a MouseEvent instead of calling .click() for strict browsers
+    const e = document.createEvent('MouseEvents');
+    e.initEvent('click', true, true);
+    a.dispatchEvent(e);
+    
     setTimeout(() => {
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
