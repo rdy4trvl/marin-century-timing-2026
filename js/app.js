@@ -1107,7 +1107,7 @@ function saveConfig() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `marin-century-config-${new Date().toISOString().slice(0, 10)}.json`;
+    a.download = `marin-century-config.json`;
     a.click();
     URL.revokeObjectURL(url);
 }
