@@ -145,7 +145,8 @@ async function preloadGPXFiles() {
 
 async function autoLoadConfig() {
     try {
-        const response = await fetch('marin-century-config.json');
+        const cacheBuster = new Date().getTime();
+        const response = await fetch(`marin-century-config.json?v=${cacheBuster}`);
         if (!response.ok) return false;
         
         const config = await response.json();
