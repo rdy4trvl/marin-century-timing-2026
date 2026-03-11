@@ -198,6 +198,19 @@
                     </table>
                 </div>
 
+                <!-- Rest Stop Dwell Times -->
+                <div class="panel">
+                    <h3>Rest Stop Dwell Times (min)</h3>
+                    <p class="help-text">Default minutes riders spend at each rest stop, by speed tier. Applied to all rest stops when loaded from GPX.</p>
+                    <div class="weight-inputs">
+                        <label>Max <input type="number" id="dwell-max" value="5" min="0" max="60" step="1" onchange="window.app.updateDefaultDwellTime('max', this.value)"> min</label>
+                        <label>Upper 25% <input type="number" id="dwell-upper" value="7" min="0" max="60" step="1" onchange="window.app.updateDefaultDwellTime('upper', this.value)"> min</label>
+                        <label>Mid <input type="number" id="dwell-mid" value="10" min="0" max="60" step="1" onchange="window.app.updateDefaultDwellTime('mid', this.value)"> min</label>
+                        <label>Lower 25% <input type="number" id="dwell-lower" value="12" min="0" max="60" step="1" onchange="window.app.updateDefaultDwellTime('lower', this.value)"> min</label>
+                        <label>Min <input type="number" id="dwell-min" value="12" min="0" max="60" step="1" onchange="window.app.updateDefaultDwellTime('min', this.value)"> min</label>
+                    </div>
+                </div>
+
                 <!-- Tier Weights -->
                 <div class="panel">
                     <h3>Speed Tier Weights</h3>
@@ -413,7 +426,7 @@
         </section>
     </main>
 
-    <script type="module" src="js/app.js?v=7"></script>
+    <script type="module" src="js/app.js?v=8"></script>
 </body>
 
 </html>

@@ -16,6 +16,7 @@ const DEFAULT_ROUTES = [
 const DEFAULT_SPEED_TIERS = [17, 15, 13.5, 12, 10];
 const DEFAULT_TIER_WEIGHTS = [0.05, 0.20, 0.50, 0.20, 0.05];
 const TIER_NAMES = ['max', 'upper', 'mid', 'lower', 'min'];
+const DEFAULT_DWELL_TIMES = { max: 5, upper: 7, mid: 10, lower: 12, min: 12 };
 
 // ===== APPLICATION STATE =====
 const state = {
@@ -43,6 +44,7 @@ const state = {
     simulationResults: null,
     aggregatedResults: null,
     aggregatedPolice: null,
+    defaultDwellTimes: { ...DEFAULT_DWELL_TIMES },
 };
 
 // Initialize default start times for each route
@@ -144,17 +146,20 @@ async function preloadGPXFiles() {
  * Matches by name (case-insensitive) first, then by mile proximity.
  */
 function overlayDwellTimes(gpxStops, savedStops) {
-    if (!savedStops || savedStops.length === 0) return gpxStops;
     return gpxStops.map(gpxStop => {
-        const match = savedStops.find(s =>
-            s.name.toLowerCase().trim() === gpxStop.name.toLowerCase().trim()
-        ) || savedStops.find(s =>
-            Math.abs((s.mile || 0) - (gpxStop.mile || 0)) < 1.5
+        // Try to find a saved config match by name or mile proximity
+        const match = savedStops && (
+            savedStops.find(s =>
+                s.name.toLowerCase().trim() === gpxStop.name.toLowerCase().trim()
+            ) || savedStops.find(s =>
+                Math.abs((s.mile || 0) - (gpxStop.mile || 0)) < 1.5
+            )
         );
         if (match?.dwellTimes) {
             return { ...gpxStop, dwellTimes: { ...match.dwellTimes } };
         }
-        return gpxStop;
+        // Fall back to global default dwell times
+        return { ...gpxStop, dwellTimes: { ...state.defaultDwellTimes } };
     });
 }
 
@@ -186,6 +191,7 @@ function buildConfigObject() {
         tierWeights: state.tierWeights,
         speedModel: state.speedModel,
         weather: state.weather,
+        defaultDwellTimes: state.defaultDwellTimes,
     };
 }
 
@@ -247,6 +253,7 @@ function applyConfig(config) {
     if (config.tierWeights) state.tierWeights = [...config.tierWeights];
     if (config.speedModel) Object.assign(state.speedModel, config.speedModel);
     if (config.weather) Object.assign(state.weather, config.weather);
+    if (config.defaultDwellTimes) Object.assign(state.defaultDwellTimes, config.defaultDwellTimes);
 
     // Refresh UI
     renderRidersTab();
@@ -473,7 +480,7 @@ function addRestStop(routeIndex) {
         mile: seg ? seg.cumulativeDistance : 0,
         lat: seg ? seg.startLat : 0,
         lon: seg ? seg.startLon : 0,
-        dwellTimes: { max: 5, upper: 7, mid: 10, lower: 12, min: 12 }
+        dwellTimes: { ...state.defaultDwellTimes }
     });
 
     showRestStopEditor(routeIndex);
@@ -647,6 +654,7 @@ function updateStartTime(routeIndex, hour, pctValue) {
 // ===== SETTINGS TAB =====
 function renderSettingsTab() {
     renderSpeedTiers();
+    renderDwellTimes();
     bindWeightInputs();
     bindSettingInputs();
     renderAssumptions();
@@ -660,15 +668,9 @@ function renderAssumptions() {
     const w = state.weather;
     const weatherStartStr = w.startHour >= 13 ? `${w.startHour - 12}:00 PM` : w.startHour === 12 ? '12:00 PM' : `${w.startHour}:00 AM`;
 
-    // Gather default dwell times from first route with rest stops
-    let dwellStr = 'Max: 5, Upper: 7, Mid: 10, Lower: 12, Min: 12 min';
-    for (const route of state.routes) {
-        if (route.restStops?.length > 0) {
-            const d = route.restStops[0].dwellTimes;
-            dwellStr = `Max: ${d.max}, Upper: ${d.upper}, Mid: ${d.mid}, Lower: ${d.lower}, Min: ${d.min} min`;
-            break;
-        }
-    }
+    // Gather default dwell times from state
+    const dd = state.defaultDwellTimes;
+    const dwellStr = `Max: ${dd.max}, Upper: ${dd.upper}, Mid: ${dd.mid}, Lower: ${dd.lower}, Min: ${dd.min} min`;
 
     const assumptions = [
         ['Uphill Speed Penalty', `${sm.uphillFactor} mph per 1% grade`, 'Speed decreases for each 1% of uphill grade'],
@@ -706,6 +708,21 @@ function renderSpeedTiers() {
         `;
         tbody.appendChild(row);
     });
+}
+
+function renderDwellTimes() {
+    const d = state.defaultDwellTimes;
+    const ids = ['dwell-max', 'dwell-upper', 'dwell-mid', 'dwell-lower', 'dwell-min'];
+    const tiers = ['max', 'upper', 'mid', 'lower', 'min'];
+    ids.forEach((id, i) => {
+        const el = document.getElementById(id);
+        if (el) el.value = d[tiers[i]];
+    });
+}
+
+function updateDefaultDwellTime(tier, value) {
+    state.defaultDwellTimes[tier] = parseInt(value) || 0;
+    renderAssumptions();
 }
 
 function updateSpeedTier(routeIndex, tierIndex, value) {
@@ -897,9 +914,18 @@ function renderRestStopSchedule() {
     tbody.innerHTML = '';
     if (!state.aggregatedResults) return;
 
-    const maxCount = Math.max(...state.aggregatedResults.flatMap(r => r.bandCounts));
+    // Sort: Congratulations always last, otherwise preserve openTime order
+    const sortedResults = [...state.aggregatedResults].sort((a, b) => {
+        const isCongA = /^congratulations!?$/i.test(a.name.trim());
+        const isCongB = /^congratulations!?$/i.test(b.name.trim());
+        if (isCongA && !isCongB) return 1;
+        if (!isCongA && isCongB) return -1;
+        return 0;
+    });
 
-    state.aggregatedResults.forEach(rs => {
+    const maxCount = Math.max(...sortedResults.flatMap(r => r.bandCounts));
+
+    sortedResults.forEach(rs => {
         const row = document.createElement('tr');
         row.innerHTML = `
             <td><strong>${rs.name}</strong></td>
@@ -1320,5 +1346,6 @@ window.app = {
     updateNoShow,
     updateStartTime,
     updateSpeedTier,
+    updateDefaultDwellTime,
     clearBrowserSavedSettings,
 };
