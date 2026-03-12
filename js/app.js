@@ -856,6 +856,13 @@ function runSimulation() {
     // Aggregate rest stops across routes
     const aggregatedRestStops = aggregation.aggregateRestStops(allRestStopSummaries);
 
+    // Finish line summary (aggregated across all routes using last segment arrival)
+    const finishLineData = allResults.map(r => ({
+        routeName: r.routeName,
+        simResult: r.simResult
+    }));
+    const finishLineSummary = aggregation.createFinishLineSummary(finishLineData);
+
     // Police point summaries
     const allPoliceSummaries = [];
     for (const route of state.routes) {
@@ -869,6 +876,7 @@ function runSimulation() {
 
     state.simulationResults = allResults;
     state.aggregatedResults = aggregatedRestStops;
+    state.finishLineSummary = finishLineSummary;
     state.aggregatedPolice = aggregatedPolice;
 
     renderResults();
@@ -914,18 +922,13 @@ function renderRestStopSchedule() {
     tbody.innerHTML = '';
     if (!state.aggregatedResults) return;
 
-    // Sort: Congratulations always last, otherwise preserve openTime order
-    const sortedResults = [...state.aggregatedResults].sort((a, b) => {
-        const isCongA = /^congratulations!?$/i.test(a.name.trim());
-        const isCongB = /^congratulations!?$/i.test(b.name.trim());
-        if (isCongA && !isCongB) return 1;
-        if (!isCongA && isCongB) return -1;
-        return 0;
-    });
+    // Include finish line in max count calculation for heat coloring
+    const allBandCounts = state.finishLineSummary
+        ? [...state.aggregatedResults.flatMap(r => r.bandCounts), ...state.finishLineSummary.bandCounts]
+        : state.aggregatedResults.flatMap(r => r.bandCounts);
+    const maxCount = Math.max(...allBandCounts);
 
-    const maxCount = Math.max(...sortedResults.flatMap(r => r.bandCounts));
-
-    sortedResults.forEach(rs => {
+    state.aggregatedResults.forEach(rs => {
         const row = document.createElement('tr');
         row.innerHTML = `
             <td><strong>${rs.name}</strong></td>
@@ -942,6 +945,27 @@ function renderRestStopSchedule() {
         `;
         tbody.appendChild(row);
     });
+
+    // Append Finish Line row at the bottom
+    if (state.finishLineSummary) {
+        const fl = state.finishLineSummary;
+        const finishRow = document.createElement('tr');
+        finishRow.style.borderTop = '2px solid var(--border)';
+        finishRow.innerHTML = `
+            <td><strong>🏁 ${fl.name}</strong></td>
+            <td style="font-size:0.75rem; color:var(--text-muted)">${fl.routes.join(', ')}</td>
+            <td>${aggregation.formatTimeShort(fl.setupTime)}</td>
+            <td>${aggregation.formatTimeShort(fl.openTime)}</td>
+            <td>${fl.peakBand} <span style="color:var(--warning)">(${fl.peakCount})</span></td>
+            <td>${aggregation.formatTimeShort(fl.closeTime)}</td>
+            <td class="riders-col"><strong>${fl.totalRiders}</strong></td>
+            ${fl.bandCounts.map(c => {
+            const level = getHeatLevel(c, maxCount);
+            return `<td class="heat-cell heat-${level}">${c || ''}</td>`;
+        }).join('')}
+        `;
+        tbody.appendChild(finishRow);
+    }
 }
 
 function getHeatLevel(count, maxCount) {

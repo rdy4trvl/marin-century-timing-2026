@@ -35,8 +35,32 @@ export class GPXParser {
         // Create segments from trackpoints
         const segments = this.createSegments(trackpoints);
 
+        // Separate finish-line waypoints from rest stops using last trackpoint proximity.
+        // For loop routes (start ≈ finish), also check that the waypoint matches to a
+        // segment in the second half of the route so we don't accidentally filter the start.
+        const firstPt = trackpoints[0];
+        const lastPt = trackpoints[trackpoints.length - 1];
+        const finishThresholdMiles = 0.03; // ~160 feet
+        const lastSegCumDist = segments.length > 0 ? segments[segments.length - 1].cumulativeDistance : 0;
+        const actualStops = [];
+        let hasFinishWaypoint = false;
+
+        for (const wp of meaningfulStops) {
+            const distToEnd = this.haversineDistance(wp.lat, wp.lon, lastPt.lat, lastPt.lon);
+            if (distToEnd <= finishThresholdMiles) {
+                // Near route endpoint — check if it's in the second half (finish, not start)
+                const matched = this.matchWaypointsToSegments([wp], segments)[0];
+                const isSecondHalf = matched && matched.mile > lastSegCumDist * 0.5;
+                if (isSecondHalf) {
+                    hasFinishWaypoint = true; // finish-line waypoint — exclude from rest stops
+                    continue;
+                }
+            }
+            actualStops.push(wp);
+        }
+
         // Match meaningful waypoints to nearest segments (these become rest stops)
-        const restStops = this.matchWaypointsToSegments(meaningfulStops, segments);
+        const restStops = this.matchWaypointsToSegments(actualStops, segments);
 
         // Match police waypoints to nearest segments (0-dwell)
         const policeStops = this.matchWaypointsToSegments(policePoints, segments).map(ps => ({
@@ -58,11 +82,16 @@ export class GPXParser {
             (sum, s) => sum + Math.min(0, s.elevationGain), 0
         );
 
+        // Finish line = last segment
+        const finishSegmentIndex = segments.length > 0 ? segments.length - 1 : 0;
+
         return {
             trackpoints,
             segments,
             restStops,
             policeStops,
+            finishSegmentIndex,
+            hasFinishWaypoint,
             waypoints: allWaypoints,
             waypointsBySegment: allWaypointsBySegment,
             stats: {
@@ -71,7 +100,7 @@ export class GPXParser {
                 totalDescending: Math.round(Math.abs(totalDescending) * 3.281),
                 segmentCount: segments.length,
                 waypointCount: allWaypoints.length,
-                restStopCount: meaningfulStops.length,
+                restStopCount: actualStops.length,
                 policeCount: policePoints.length,
             }
         };
