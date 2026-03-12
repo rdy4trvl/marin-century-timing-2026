@@ -206,6 +206,59 @@ export class Aggregation {
     }
 
     /**
+     * Create a single "Finish Line" summary aggregated across all routes.
+     * Uses the last segment departure time for each slug as the finish arrival.
+     */
+    createFinishLineSummary(allRouteFinishData) {
+        const timeBands = this.getTimeBands();
+        const bandCounts = new Array(timeBands.length).fill(0);
+        let firstArrival = Infinity;
+        let lastArrival = 0;
+        let totalRiders = 0;
+        const routes = [];
+
+        for (const { routeName, simResult } of allRouteFinishData) {
+            routes.push(routeName);
+
+            for (const { slug, results } of simResult.slugResults) {
+                if (results.length === 0) continue;
+
+                const finishTime = results[results.length - 1].departureTime;
+                firstArrival = Math.min(firstArrival, finishTime);
+                lastArrival = Math.max(lastArrival, finishTime);
+                totalRiders += slug.riderCount;
+
+                for (let b = 0; b < timeBands.length; b++) {
+                    if (finishTime >= timeBands[b].startHour && finishTime < timeBands[b].endHour) {
+                        bandCounts[b] += slug.riderCount;
+                        break;
+                    }
+                }
+            }
+        }
+
+        if (totalRiders < 1) return null;
+
+        const roundedCounts = bandCounts.map(c => Math.round(c));
+        const peakCount = Math.max(...roundedCounts);
+        const peakIndex = roundedCounts.indexOf(peakCount);
+
+        return {
+            name: 'Finish Line',
+            routes,
+            setupTime: firstArrival - 0.5,
+            openTime: firstArrival,
+            closeTime: lastArrival,
+            peakBand: timeBands[peakIndex]?.label || '',
+            peakCount,
+            totalRiders: Math.round(totalRiders),
+            bandCounts: roundedCounts,
+            timeBands,
+            isFinishLine: true
+        };
+    }
+
+    /**
      * Generate a printable rest stop captain report.
      */
     generateCaptainReport(restStopSummary) {
